@@ -1,85 +1,62 @@
+# This is a tester that runs a certain amount of tests for random lists and finds the maximum amount of operations for those lists.
+# The default amount of tests for every list size is 100, except for lists size 500 which are 20.
+# If you want to run more tests just run this script with the first argument being the amount of tests you want to run
+# The results of the test and the list for which the maximum amount of operations was found will be in a file called move_result
+
+move_test (){
+	MAX_OPERATIONS=0
+	for (( i=0; i<$1;i++))
+	do
+		ARG=$(./random.sh $2)
+		if [ "$ARG" = "wrong" ]
+		then
+			continue
+		else
+			OPERATIONS=$(./push_swap $ARG | wc -l)
+			if [[ "$(($OPERATIONS))" > "$(($MAX_OPERATIONS))" ]]
+			then
+				MAX_OPERATIONS=$OPERATIONS
+				MAX_ARG=$ARG
+			fi
+		fi
+	done;
+}
+
 # !/bin/zsh
-rm result
-MAX_OPERATIONS=0
-for (( i=0; i<$1;i++))
-do
-	echo $i
-	ARG=$(./random.sh 3)
-	if [ "$ARG" = "wrong" ]
-	then
-		continue
-	else
-		OPERATIONS=$(./push_swap $ARG | wc -l)
-		if [[ "$(($OPERATIONS))" > "$(($MAX_OPERATIONS))" ]]
-		then
-			MAX_OPERATIONS=$OPERATIONS
-			MAX_ARG=$ARG
-		fi
-	fi
-done;
-echo "For lists of size 3 after $1 tests the max operations are : $MAX_OPERATIONS"
-echo "For lists of size 3 after $1 tests the max operations are : $MAX_OPERATIONS" >> result
-echo "\nmaximum argument is $MAX_ARG\n" >> result
+rm -rf move_result
 
-MAX_OPERATIONS=0
-for (( i=0; i<$1;i++))
-do
-	echo $i
-	ARG=$(./random.sh 5)
-	if [ "$ARG" = "wrong" ]
+if [ -z "$1" ]
 	then
-		continue
+		AMOUNT=100
 	else
-		OPERATIONS=$(./push_swap $ARG | wc -l)
-		if [[ "$(($OPERATIONS))" > "$(($MAX_OPERATIONS))" ]]
-		then
-			MAX_OPERATIONS=$OPERATIONS
-			MAX_ARG=$ARG
-		fi
-	fi
-done;
-echo "For lists of size 5 after $1 tests the max operations are : $MAX_OPERATIONS"
-echo "For lists of size 5 after $1 tests the max operations are : $MAX_OPERATIONS" >> result
-echo "\nmaximum argument is $MAX_ARG\n" >> result
+		AMOUNT=$1
+fi
 
-MAX_OPERATIONS=0
-for (( i=0; i<$1;i++))
-do
-	echo $i
-	ARG=$(./random.sh 100)
-	if [ "$ARG" = "wrong" ]
-	then
-		continue
-	else
-		OPERATIONS=$(./push_swap $ARG | wc -l)
-		if [[ "$(($OPERATIONS))" > "$(($MAX_OPERATIONS))" ]]
-		then
-			MAX_OPERATIONS=$OPERATIONS
-			MAX_ARG=$ARG
-		fi
-	fi
-done;
-echo "For lists of size 100 after $1 tests the max operations are : $MAX_OPERATIONS"
-echo "For lists of size 100 after $1 tests the max operations are : $MAX_OPERATIONS" >> result
-echo "\nmaximum argument is $MAX_ARG\n" >> result
+echo "\n\nRunning tests for lists of size 3 ...\n"
+move_test $AMOUNT 3
+echo "For lists of size 3 after $AMOUNT tests the max operations are : $MAX_OPERATIONS"
+echo "For lists of size 3 after $AMOUNT tests the max operations are : $MAX_OPERATIONS" >> move_result
+echo "\nmaximum argument is $MAX_ARG\n" >> move_result
 
-MAX_OPERATIONS=0
-for (( i=0; i<($1 / 5);i++))
-do
-	echo $i
-	ARG=$(./random.sh 500)
-	if [ "$ARG" = "wrong" ]
-	then
-		continue
-	else
-		OPERATIONS=$(./push_swap $ARG | wc -l)
-		if [[ "$(($OPERATIONS))" > "$(($MAX_OPERATIONS))" ]]
-		then
-			MAX_OPERATIONS=$OPERATIONS
-			MAX_ARG=$ARG
-		fi
-	fi
-done;
-echo "For lists of size 500 after $(($1 / 5)) tests the max operations are : $MAX_OPERATIONS"
-echo "For lists of size 500 after $(($1 / 5)) tests the max operations are : $MAX_OPERATIONS" >> result
-echo "\nmaximum argument is $MAX_ARG\n" >> result
+
+echo "\n\nRunning tests for lists of size 5 ...\n"
+move_test $AMOUNT 5
+echo "For lists of size 5 after $AMOUNT tests the max operations are : $MAX_OPERATIONS"
+echo "For lists of size 5 after $AMOUNT tests the max operations are : $MAX_OPERATIONS" >> move_result
+echo "\nmaximum argument is $MAX_ARG\n" >> move_result
+
+
+echo "\n\nRunning tests for lists of size 100 ...\n"
+move_test $AMOUNT 100
+echo "For lists of size 100 after $AMOUNT tests the max operations are : $MAX_OPERATIONS"
+echo "For lists of size 100 after $AMOUNT tests the max operations are : $MAX_OPERATIONS" >> move_result
+echo "\nmaximum argument is $MAX_ARG\n" >> move_result
+
+
+echo "\n\nRunning tests for lists of size 500 ...\n"
+move_test $AMOUNT 500
+echo "For lists of size 500 after $(($AMOUNT / 5)) tests the max operations are : $MAX_OPERATIONS"
+echo "For lists of size 500 after $(($AMOUNT / 5)) tests the max operations are : $MAX_OPERATIONS" >> move_result
+echo "\nmaximum argument is $MAX_ARG\n" >> move_result
+
+
