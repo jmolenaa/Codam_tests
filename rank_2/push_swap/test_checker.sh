@@ -1,6 +1,8 @@
 # this script is for the bonus part of push_swap, it will run similar tests to general_test.sh and random_lists.sh
 # it assumes that your push_swap works correctly, grabs the output of that and puts it through your checker to see if OK is printed
 # it runs 100 tests by default but you can change the amount by inputting a different number as the first argument
+# It also checks for wrong inputs and if the error code of the program is different from 0
+# The script assumes that the error message your program prints is always "Error\n", if you print a different message please go to line 428 column 18 and change the comparison in the if statement to the error message you print (the newline can be ommited)
 # this test is not enough to pass, it only checks with the output form your push_swap program, which can ommit certain operations
 # please test if all operations work manually
 
@@ -420,3 +422,95 @@ do
 	AMOUNT=$(jot -r 1 1 1000)
 	test 50 $AMOUNT
 done;
+
+
+error_check () {
+	if [ "$1" == "Error" ]
+	then
+		echo "Error message	$GREEN"OK"$RESET"
+	else
+		echo "Error message	$RED"KO"$RESET"
+	fi
+	if [ "$2" == 0 ]
+	then
+		echo "Exit status	$RED"KO"$RESET\n"
+	else
+		echo "Exit status	$GREEN"OK"$RESET\n"
+	fi
+}
+
+
+
+echo "\n$BOLD Testing wrong input $RESET\n"
+
+echo "\n$BOLD Testing duplicate numbers $RESET\n"
+check=$(./checker 1 1 2>&1)
+error_check "$check" "$?"
+
+echo "\n$BOLD Testing list "1 -" $RESET\n"
+check=$(./checker 1 - 2>&1)
+error_check "$check" "$?"
+
+echo "\n$BOLD Testing list "1 +" $RESET\n"
+check=$(./checker 1 + 2>&1)
+error_check "$check" "$?"
+
+echo "\n$BOLD Testing list "1 --2" $RESET\n"
+check=$(./checker 1 --2 2>&1)
+error_check "$check" "$?"
+
+echo "\n$BOLD Testing non integer input $RESET\n"
+check=$(./checker 1 asd 2>&1)
+error_check "$check" "$?"
+
+echo "\n$BOLD Testing non integer input $RESET\n"
+check=$(./checker 1 a 12 2>&1)
+error_check "$check" "$?"
+
+echo "\n$BOLD Testing edge integer 2147483648 $RESET\n"
+check=$(./checker 1 2147483648 2>&1)
+error_check "$check" "$?"
+
+echo "\n$BOLD Testing edge integer -2147483649 $RESET\n"
+check=$(./checker 1 -2147483649 2>&1)
+error_check "$check" "$?"
+
+echo "\n$BOLD Testing big long integers $RESET\n"
+check=$(./checker 1 21474836482147483648 2>&1)
+error_check "$check" "$?"
+
+echo "\n$BOLD Testing big long integers $RESET\n"
+check=$(./checker 1 -21474836482147483648 2>&1)
+error_check "$check" "$?"
+
+echo "\n$BOLD Testing big long integers $RESET\n"
+check=$(./checker 1 1241515718751835168241 2>&1)
+error_check "$check" "$?"
+
+echo "\n$BOLD Testing list "1 -+2" $RESET\n"
+check=$(./checker 1 -+2  2>&1)
+error_check "$check" "$?"
+
+echo "\n$BOLD Testing empty string $RESET\n"
+check=$(./checker 1 "" 2>&1)
+error_check "$check" "$?"
+
+echo "\n$BOLD Testing long int overflow to integer $RESET\n"
+check=$(./checker 1 18446744073709551616 2>&1)
+error_check "$check" "$?"
+
+echo "\n$BOLD Testing max long int  $RESET\n"
+check=$(./checker 1 9223372036854775807 2>&1)
+error_check "$check" "$?"
+
+echo "\n$BOLD Testing max long int +1 $RESET\n"
+check=$(./checker 1 9223372036854775808 2>&1)
+error_check "$check" "$?"
+
+echo "\n$BOLD Testing min long int  $RESET\n"
+check=$(./checker 1 -9223372036854775808 2>&1)
+error_check "$check" "$?"
+
+echo "\n$BOLD Testing min long int -1  $RESET\n"
+check=$(./checker 1 -9223372036854775809 2>&1)
+error_check "$check" "$?"

@@ -1,6 +1,8 @@
 # This script checks hardcoded lists of various sizes to see if they get sorted properly and use correct operations.
 # It will also tell you the amount of moves it took to sort the list
 # This will check for various edge cases like sorted lists, lists reverse sorted, lists half sorted and so on
+# It also checks for wrong inputs and if the error code of the program is different from 0
+# The script assumes that the error message your program prints is always "Error\n", if you print a different message please go to line 387 column 18 and change the comparison in the if statement to the error message you print (the newline can be ommited)
 
 GREEN='\033[0;32m'
 RED='\033[0;31m'
@@ -17,7 +19,6 @@ set_color () {
 }
 
 #!/bin/zsh
-
 
 echo "\n $BOLD Testing lists smaller than 4 $RESET\n"
 
@@ -382,5 +383,93 @@ set_color $check
 echo "first half reverse, second sorted			check : $COLOR$check$RESET			moves : $amount\n"
 
 
+error_check () {
+	if [ "$1" == "Error" ]
+	then
+		echo "Error message	$GREEN"OK"$RESET"
+	else
+		echo "Error message	$RED"KO"$RESET"
+	fi
+	if [ "$2" == 0 ]
+	then
+		echo "Exit status	$RED"KO"$RESET\n"
+	else
+		echo "Exit status	$GREEN"OK"$RESET\n"
+	fi
+}
 
 
+
+echo "\n$BOLD Testing wrong input $RESET\n"
+
+echo "\n$BOLD Testing duplicate numbers $RESET\n"
+check=$(./push_swap 1 1 2>&1)
+error_check "$check" "$?"
+
+echo "\n$BOLD Testing list "1 -" $RESET\n"
+check=$(./push_swap 1 - 2>&1)
+error_check "$check" "$?"
+
+echo "\n$BOLD Testing list "1 +" $RESET\n"
+check=$(./push_swap 1 + 2>&1)
+error_check "$check" "$?"
+
+echo "\n$BOLD Testing list "1 --2" $RESET\n"
+check=$(./push_swap 1 --2 2>&1)
+error_check "$check" "$?"
+
+echo "\n$BOLD Testing non integer input $RESET\n"
+check=$(./push_swap 1 asd 2>&1)
+error_check "$check" "$?"
+
+echo "\n$BOLD Testing non integer input $RESET\n"
+check=$(./push_swap 1 a 12 2>&1)
+error_check "$check" "$?"
+
+echo "\n$BOLD Testing edge integer 2147483648 $RESET\n"
+check=$(./push_swap 1 2147483648 2>&1)
+error_check "$check" "$?"
+
+echo "\n$BOLD Testing edge integer -2147483649 $RESET\n"
+check=$(./push_swap 1 -2147483649 2>&1)
+error_check "$check" "$?"
+
+echo "\n$BOLD Testing big long integers $RESET\n"
+check=$(./push_swap 1 21474836482147483648 2>&1)
+error_check "$check" "$?"
+
+echo "\n$BOLD Testing big long integers $RESET\n"
+check=$(./push_swap 1 -21474836482147483648 2>&1)
+error_check "$check" "$?"
+
+echo "\n$BOLD Testing big long integers $RESET\n"
+check=$(./push_swap 1 1241515718751835168241 2>&1)
+error_check "$check" "$?"
+
+echo "\n$BOLD Testing list "1 -+2" $RESET\n"
+check=$(./push_swap 1 -+2  2>&1)
+error_check "$check" "$?"
+
+echo "\n$BOLD Testing empty string $RESET\n"
+check=$(./push_swap 1 "" 2>&1)
+error_check "$check" "$?"
+
+echo "\n$BOLD Testing long int overflow to integer $RESET\n"
+check=$(./push_swap 1 18446744073709551616 2>&1)
+error_check "$check" "$?"
+
+echo "\n$BOLD Testing max long int  $RESET\n"
+check=$(./push_swap 1 9223372036854775807 2>&1)
+error_check "$check" "$?"
+
+echo "\n$BOLD Testing max long int +1 $RESET\n"
+check=$(./push_swap 1 9223372036854775808 2>&1)
+error_check "$check" "$?"
+
+echo "\n$BOLD Testing min long int  $RESET\n"
+check=$(./push_swap 1 -9223372036854775808 2>&1)
+error_check "$check" "$?"
+
+echo "\n$BOLD Testing min long int -1  $RESET\n"
+check=$(./push_swap 1 -9223372036854775809 2>&1)
+error_check "$check" "$?"
