@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # This is a tester that runs tests with random lists and checks if the lists have been sorted correctly
 # It will run tests for lists sized 10, 100, 500, 1000 and then run a bunch of tests with random lists sized between 1 and 500
 # The default amount of tests are set to 100 and 50 for a 1000
@@ -8,6 +10,17 @@ GREEN='\033[0;32m'
 RED='\033[0;31m'
 RESET='\033[0m'
 BOLD='\033[1m'
+
+UNAME_S=$(uname -s)
+if [ "$UNAME_S" == "Linux" ]
+then
+	CHECKER=checker_linux
+elif [ "$UNAME_S" == "Darwin" ]
+then
+	CHECKER=checker_Mac
+else
+	$(error OS: $(OS) is not supported!)
+fi
 
 set_color () {
 	if [ "$1" == "OK" ]
@@ -23,16 +36,16 @@ test_random_lists (){
 	for (( i=0; i<$1;i++))
 	do
 		ARG=$(./random.sh $2)
-		check=$(./push_swap $ARG | ./checker_Mac $ARG)
+		check=$(./push_swap $ARG | ./$CHECKER $ARG)
 		if [ "$check" == "KO" ]
 		then
 			TEST="KO"
-			echo "For lists of size $2 somethign went wrong with list\n$ARG" >> random_result
+			echo -e "For lists of size $2 somethign went wrong with list\n$ARG" >> random_result
 			break
 		fi
 	done;
 	set_color $TEST
-	echo "$COLOR $TEST $RESET"
+	echo -e "$COLOR $TEST $RESET"
 }
 
 #!/bin/zsh
@@ -45,28 +58,28 @@ if [ -z "$1" ]
 		AMOUNT=$1
 fi
 
-echo "\n$BOLD Testing random lists $RESET\n\n"
+echo -e "\n$BOLD Testing random lists $RESET\n\n"
 
-echo "\n$BOLD Testing random lists of size 10 $RESET\n\n"
+echo -e "\n$BOLD Testing random lists of size 10 $RESET\n\n"
 
 test_random_lists $AMOUNT 10
 
-echo "\n$BOLD Testing random lists of size 100 $RESET\n\n"
+echo -e "\n$BOLD Testing random lists of size 100 $RESET\n\n"
 
 test_random_lists $AMOUNT 100
 
-echo "\n$BOLD Testing random lists of size 500 $RESET\n\n"
+echo -e "\n$BOLD Testing random lists of size 500 $RESET\n\n"
 
 test_random_lists $AMOUNT 500
 
-echo "\n$BOLD Testing random lists of size 1000 $RESET\n\n"
+echo -e "\n$BOLD Testing random lists of size 1000 $RESET\n\n"
 
 test_random_lists $(( $AMOUNT / 2 )) 1000
 
-echo "\n$BOLD Testing random lists of random sizes between 1 and 500$RESET\n\n"
+echo -e "\n$BOLD Testing random lists of random sizes between 1 and 500$RESET\n\n"
 
 for (( j=0; j<25;j++))
 do
-	AMOUNT=$(jot -r 1 1 500)
+	AMOUNT=$(shuf -i 1-500 -n 1)
 	test_random_lists 10 $AMOUNT
 done;
